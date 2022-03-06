@@ -123,6 +123,19 @@ However, Processing currently works only with Java 8. In order to have the Java 
 
 At this point, the project should run properly. Try it out.
 
+## Solutions
+
+The following screenshots show the first 4 visualizations, completed - yours need not be identical, but should be very similar:
+
+1. May 2021 Morning Pedestrian Counts:
+   ![May 2021 Morning Pedestrian Counts](./images/screenshot_may2021morning.png)
+2. May 2021 Evening Pedestrian Counts:
+   ![May 2021 Evening Pedestrian Counts](./images/screenshot_may2021evening.png)
+3. Difference between May 2021 Evening and Morning Pedestrian Counts
+   ![Difference between May 2021 Evening and Morning Pedestrian Counts](./images/screenshot_may2021eveningvsmorning.png)
+4. Difference Between May 2021 and May 2019 Pedestrian Counts:
+   ![Difference Between May 2021 and May 2019 Pedestrian Counts](./images/screenshot_may2021vsmay2019.png)
+
 ## Folder structure
 
 This project has several important directories:
