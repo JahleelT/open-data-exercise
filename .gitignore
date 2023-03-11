@@ -16,7 +16,7 @@ bin
 *.dmg
 *.gz
 *.iso
-*.jar
+#*.jar
 *.rar
 *.tar
 *.zip
@@ -152,4 +152,4 @@ replay_pid*
 
 # Do include dependency jar files #
 !lib/*.jar
-
+!lib/unfoldingworld/*.jar

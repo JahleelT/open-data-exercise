@@ -2,9 +2,13 @@ package edu.nyu.cs;
 
 // some basic java imports
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.SystemUtils;
+
 import java.util.regex.Matcher;
 
 // some imports used by the UnfoldingMap library
@@ -146,6 +150,9 @@ public class App extends PApplet {
 	 * @throws FileNotFoundException
 	 */
 	public String[] getLinesFromFile(String filepath) {
+		String[] lines = {"foo", "bar"};
+		return lines;
+		// delete the two lines above... they are placeholder only
 		// complete this method
 	}
 
@@ -190,35 +197,44 @@ public class App extends PApplet {
 		map = getMap(); // create the map and store it in the global-ish map variable
 
 		// load the data from the file... you will have to complete the functions called to make sure this works
-		String[] lines = getLinesFromFile("data/PedCountLocationsMay2015.csv"); // get an array of the lines from the file
-		data = getDataFromLines(lines); // get a two-dimensional array of the data in these lines; complete the getDataFromLines method so the data from the file is returned appropriately
-		// System.out.println(Arrays.deepToString(data)); // for debugging
+		try {
+			String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
+			String path = Paths.get(cwd, "data", "PedCountLocationsMay2015.csv").toString(); // e.g "data/PedCountLocationsMay2015.csv" on Mac/Unix vs. "data\PedCountLocationsMay2015.csv" on Windows
+			String[] lines = getLinesFromFile(path); // get an array of the lines from the file.
+			data = getDataFromLines(lines); // get a two-dimensional array of the data in these lines; complete the getDataFromLines method so the data from the file is returned appropriately
+			// System.out.println(Arrays.deepToString(data)); // for debugging
 
-		// automatically zoom and pan into the New York City location
-		map.zoomAndPanTo(DEFAULT_ZOOM_LEVEL, DEFAULT_LOCATION);
+			// automatically zoom and pan into the New York City location
+			map.zoomAndPanTo(DEFAULT_ZOOM_LEVEL, DEFAULT_LOCATION);
 
-		// by default, show markers for the morning counts in May 2021 (the third-to-last field in the CSV file)
-		showMay2021MorningCounts(data);
+			// by default, show markers for the morning counts in May 2021 (the third-to-last field in the CSV file)
+			showMay2021MorningCounts(data);
 
-		// various ways to zoom in / out
-		// map.zoomLevelOut();
-		// map.zoomLevelIn();
-		// map.zoomIn();
-		// map.zoomOut();
+			// various ways to zoom in / out
+			// map.zoomLevelOut();
+			// map.zoomLevelIn();
+			// map.zoomIn();
+			// map.zoomOut();
 
-		// it's possible to pan to a location or a position on the screen
-		// map.panTo(nycLocation); // pan to NYC
-		// ScreenPosition screenPosition = new ScreenPosition(100, 100);
-		// map.panTo(screenPosition); // pan to a position on the screen
+			// it's possible to pan to a location or a position on the screen
+			// map.panTo(nycLocation); // pan to NYC
+			// ScreenPosition screenPosition = new ScreenPosition(100, 100);
+			// map.panTo(screenPosition); // pan to a position on the screen
 
-		// zoom and pan into a location
-		// int zoomLevel = 10;
-		// map.zoomAndPanTo(zoomLevel, nycLocation);
+			// zoom and pan into a location
+			// int zoomLevel = 10;
+			// map.zoomAndPanTo(zoomLevel, nycLocation);
 
-		// it is possible to restrict zooming and panning
-		// float maxPanningDistance = 30; // in km
-		// map.setPanningRestriction(nycLocation, maxPanningDistance);
-		// map.setZoomRange(5, 22);
+			// it is possible to restrict zooming and panning
+			// float maxPanningDistance = 30; // in km
+			// map.setPanningRestriction(nycLocation, maxPanningDistance);
+			// map.setZoomRange(5, 22);
+
+
+		}
+		catch (Exception e) {
+			System.out.println("Error: could not load data from file: " + e);
+		}
 
 	} // setup
 
@@ -285,7 +301,14 @@ public class App extends PApplet {
 	 * @param args A String array of command-line arguments.
 	 */
 	public static void main(String[] args) {
-		PApplet.main("edu.nyu.cs.App"); // do not modify this!
+		System.out.printf("\n###  JDK IN USE ###\n- Version: %s\n- Location: %s\n### ^JDK IN USE ###\n\n", SystemUtils.JAVA_VERSION, SystemUtils.getJavaHome());
+		boolean isGoodJDK = SystemUtils.IS_JAVA_1_8;
+		if (!isGoodJDK) {
+			System.out.printf("Fatal Error: YOU MUST USE JAVA 1.8, not %s!!!\n", SystemUtils.JAVA_VERSION);
+		}
+		else {
+			PApplet.main("edu.nyu.cs.App"); // do not modify this!
+		}
 	}
 
 }
