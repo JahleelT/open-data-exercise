@@ -239,7 +239,7 @@ public class App extends PApplet {
 			int may2012mornCount = Integer.parseInt(may2012morningCount);
 			int may2012average = (may2012eveCount + may2012mornCount) / 2;
 			int difference = may2021average - may2012average;
-			if (!(may2012average == 0) && (difference > 0)) {
+			if (!(may2012average == 0) && (difference > 0) && ((difference % 3) == 0)) {
 				Location markerLocation = new Location(may2021Lat, may2021Lng);
 				float markerRadius = difference * SCALE_FACTOR;
 				float[] markerColor = {0, 255, 0, 127};
@@ -250,6 +250,13 @@ public class App extends PApplet {
 				Location markerLocation = new Location(may2021Lat, may2021Lng);
 				float markerRadius = difference * SCALE_FACTOR;
 				float[] markerColor = {50, 50, 50, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else if (difference > 0) {
+				Location markerLocation = new Location(may2021Lat, may2021Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {75, 255, 0, 127};
 				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
 				map.addMarker(marker);
 			}
@@ -290,10 +297,17 @@ public class App extends PApplet {
 			int sept2017mornCount = Integer.parseInt(sept2017morningCount);
 			int sept2017average = (sept2017eveCount + sept2017mornCount) / 2;
 			int difference = sept2018average - sept2017average;
-			if (!(sept2017average == 0) && (difference > 0) && !(sept2018average == 0)){
+			if (!(sept2017average == 0) && (difference > 0) && !(sept2018average == 0) && ((difference % 2) == 0)){
 				Location markerLocation = new Location(sept2018Lat, sept2018Lng);
 				float markerRadius = difference * SCALE_FACTOR;
 				float[] markerColor = {0, 255, 0, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else if (!(sept2017average == 0) && (difference > 0) && !(sept2018average == 0)) {
+				Location markerLocation = new Location(sept2018Lat, sept2018Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {0, 255, 75, 127};
 				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
 				map.addMarker(marker);
 			}
@@ -327,8 +341,8 @@ public class App extends PApplet {
 		Scanner scn = new Scanner(new FileReader(filepath));
 		String lineSeparator = Pattern.quote(System.getProperty("line.separator"));
 		String getContent = scn.useDelimiter("\\A").next();
-		scn.close();
 		String [] finalList = getContent.split(lineSeparator);
+		scn.close();
 		return finalList;
 	}
 	/**
