@@ -2,6 +2,8 @@ package edu.nyu.cs;
 
 // some basic java imports
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -27,7 +29,6 @@ import de.fhpotsdam.unfolding.providers.Microsoft;
  * A program that pops open an interactive map.
  */
 public class App extends PApplet {
-
 	/****************************************************************/
 	/*                  BEGIN - DON'T MODIFY THIS CODE              */
 	/****************************************************************/
@@ -53,9 +54,31 @@ public class App extends PApplet {
 	 * 	- when the user presses the `6` key, the code calls the customVisualization2 method to show data of your choosing, visualized with marker types of your choosing.
 	 */
 	public void keyPressed() {
-		// System.out.println("Key pressed: " + key);
-		// complete this method
-
+		Scanner scn = new Scanner(System.in);
+		char key = scn.next().charAt(0); 
+		System.out.println("Key pressed: " + key);
+		if (key == 1) {
+			showMay2021MorningCounts(data);
+		}
+		else if (key == 2) {
+			showMay2021EveningCounts(data);
+		}
+		else if (key == 3) {
+			showMay2021EveningMorningCountsDifference(data);
+		}
+		else if (key == 4) {
+			showMay2021VersusMay2019Counts(data); 
+		}
+		else if (key == 5) {
+			customVisualization1(data);
+		}
+		else if (key == 6) {
+			customVisualization2(data);
+		}
+		else {
+			System.out.println("Try pressing another key");
+		}
+		scn.close();
 	}
 
 	/**
@@ -67,20 +90,21 @@ public class App extends PApplet {
 	public void showMay2021MorningCounts(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "May 2021 Morning Pedestrian Counts";
-
-		// complete this method - DELETE THE EXAMPLE CODE BELOW
-
-		// remove the code below and replace with your own code that solves the problem indicated in the comments
-		// example of how to create a marker at a specific location and place it on the map
-		float lat = 40.737375365084105f; // latitude of a location of interest
-		float lng = -74.00101207586745f; // longitude of a location of interest
-		Location markerLocation = new Location(lat, lng); // create a Location object
-		int pedestrianCount = 11024; // an example pedestrian count (in reality, you will get these from a file)
-		float markerRadius = pedestrianCount * SCALE_FACTOR; // scale down the marker radius to look better on the map
-		float[] markerColor = {255, 0, 0, 127}; // a color, specified as a combinatino of red, green, blue, and alpha (i.e. transparency), each represented as numbers between 0 and 255.
-		MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor); // don't worry about the `this` keyword for now... just make sure it's there.
-		map.addMarker(marker);
-	}
+		int dataIndex = (data[0].length - 3); // both the show morning and show evening counts say second-to-last array element so for the morning I used 3rd to last after manually going to look at the second to last and third to last elements on the website
+		for (int i = 0 ; i < data.length ; i++) {
+			String pedestrianCount = data[i][dataIndex];
+			int count = Integer.parseInt(pedestrianCount);
+			String lat = data[i][0];
+			double latitude = Double.parseDouble(lat);
+			String lng = data[i][1];
+			double longitude = Double.parseDouble(lng);
+			Location markerLocation = new Location(latitude, longitude);
+			float markerRadius = count * SCALE_FACTOR;
+			float[] markerColor = {255, 0, 0, 127};
+			MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+			map.addMarker(marker);
+		}}
+	
 
 	/**
 	 * Adds markers to the map for the evening pedestrian counts in May 2021.
@@ -91,8 +115,21 @@ public class App extends PApplet {
 	public void showMay2021EveningCounts(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "May 2021 Evening Pedestrian Counts";
+		int dataIndex = (data[0].length - 2);
+		for (int i = 0 ; i < data.length ; i++) {
+			String pedestrianCount = data[i][dataIndex];
+			int count = Integer.parseInt(pedestrianCount);
+			String lat = data[i][0];
+			double latitude = Double.parseDouble(lat);
+			String lng = data[i][1];
+			double longitude = Double.parseDouble(lng);
+			Location markerLocation = new Location(latitude, longitude);
+			float markerRadius = count * SCALE_FACTOR;
+			float[] markerColor = {200, 50, 0, 127};
+			MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+			map.addMarker(marker);
+		}}
 		// complete this method
-	}
 
 	/**
 	 * Adds markers to the map for the difference between evening and morning pedestrian counts in May 2021.
@@ -102,6 +139,31 @@ public class App extends PApplet {
 	public void showMay2021EveningMorningCountsDifference(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "Difference Between May 2021 Evening and Morning Pedestrian Counts";
+		int eveningIndex = data[0].length - 2;
+		int morningIndex = data[0].length - 3;
+		for( int i = 0; i < data.length; i++) {
+			String eveningCount = data[i][eveningIndex];
+			String morningCount = data[i][morningIndex];
+			int eveCount = Integer.parseInt(eveningCount);
+			int mornCount = Integer.parseInt(morningCount);
+			int difference = eveCount - mornCount;
+			double lat = Double.parseDouble(data[i][0]);
+			double lng = Double.parseDouble(data[i][1]);
+			if ( difference > 0) {
+				Location markerLocation = new Location(lat, lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {0, 255, 0, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else if (difference < 0) { //not sure if this is even necessary to add since there was quite literally always more people in the evening than the morning, but it is here anyways.
+				Location markerLocation = new Location(lat, lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {255, 0, 255, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+		}
 		// complete this method
 	}
 
@@ -115,6 +177,38 @@ public class App extends PApplet {
 	public void showMay2021VersusMay2019Counts(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "Difference Between May 2021 and May 2019 Pedestrian Counts";
+		//The following is for the 2021 numbers
+		int may2021eveningIndex = data[0].length - 2;
+		int may2021morningIndex = data[0].length - 3;
+		int may2019eveningIndex = data[0].length - 8;
+		int may2019morningIndex = data[0].length - 9;
+		for( int i = 0; i < data.length; i++) {
+			String may2021eveningCount = data[i][may2021eveningIndex];
+			String may2021morningCount = data[i][may2021morningIndex];
+			int may2021eveCount = Integer.parseInt(may2021eveningCount);
+			int may2021mornCount = Integer.parseInt(may2021morningCount);
+			int may2021average = (may2021eveCount + may2021mornCount) / 2;
+			double may2021Lat = Double.parseDouble(data[i][0]);
+			double may2021Lng = Double.parseDouble(data[i][1]);
+			String may2019eveningCount = data[i][may2019eveningIndex];
+			String may2019morningCount = data[i][may2019morningIndex];
+			int may2019eveCount = Integer.parseInt(may2019eveningCount);
+			int may2019mornCount = Integer.parseInt(may2019morningCount);
+			int may2019average = (may2019eveCount + may2019mornCount) / 2;
+			int difference = may2021average - may2019average;
+			if (!(may2019average == 0)) {
+				Location markerLocation = new Location(may2021Lat, may2021Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {0, 255, 0, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else {
+				//nothing will be performed here so im going to put code to start the marker, but not add the marker
+				Location markerLocation = new Location(may2021Lat, may2021Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {50, 50, 50, 127};
+			}}
 		// complete this method
 	}
 
@@ -126,9 +220,48 @@ public class App extends PApplet {
 	 */
 	public void customVisualization1(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
-		mapTitle = "Enter Custom Map 1 Title Here";
+		mapTitle = "Difference Between May 2021 and May 2012 Counts";
+		int may2021eveningIndex = data[0].length - 2;
+		int may2021morningIndex = data[0].length - 3;
+		int may2012morningIndex = (data[0].length - 48);
+		int may2012eveningIndex = (data[0].length - 47);
+		for (int i = 0 ; i < data.length ; i++) {
+			String may2021eveningCount = data[i][may2021eveningIndex];
+			String may2021morningCount = data[i][may2021morningIndex];
+			int may2021eveCount = Integer.parseInt(may2021eveningCount);
+			int may2021mornCount = Integer.parseInt(may2021morningCount);
+			int may2021average = (may2021eveCount + may2021mornCount) / 2;
+			double may2021Lat = Double.parseDouble(data[i][0]);
+			double may2021Lng = Double.parseDouble(data[i][1]);
+			String may2012eveningCount = data[i][may2012eveningIndex];
+			String may2012morningCount = data[i][may2012morningIndex];
+			int may2012eveCount = Integer.parseInt(may2012eveningCount);
+			int may2012mornCount = Integer.parseInt(may2012morningCount);
+			int may2012average = (may2012eveCount + may2012mornCount) / 2;
+			int difference = may2021average - may2012average;
+			if (!(may2012average == 0) && (difference > 0)) {
+				Location markerLocation = new Location(may2021Lat, may2021Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {0, 255, 0, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else if (difference == 0) {
+				Location markerLocation = new Location(may2021Lat, may2021Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {50, 50, 50, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else { //purposely doing nothing with this block other than establishing some important data for the marker if it were to be placed on the map.
+				//nothing will be performed here so im going to put code to start the marker, but not add the marker
+				Location markerLocation = new Location(may2021Lat, may2021Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {255, 255, 255, 127};
+			}
+		}
+			}
 		// complete this method		
-	}
 
 	/**
 	 * A data visualization of your own choosing.  
@@ -138,7 +271,46 @@ public class App extends PApplet {
 	 */
 	public void customVisualization2(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
-		mapTitle = "Enter Custom Map 2 Title Here";
+		mapTitle = "Difference Between September 2018 and September 2017 Counts";
+		int sept2018eveningIndex = data[0].length - 11;
+		int sept2018morningIndex = data[0].length - 12;
+		int sept2017morningIndex = (data[0].length - 18);
+		int sept2017eveningIndex = (data[0].length - 17);
+		for (int i = 0 ; i < data.length ; i++) {
+			String sept2018eveningCount = data[i][sept2018eveningIndex];
+			String sept2018morningCount = data[i][sept2018morningIndex];
+			int sept2018eveCount = Integer.parseInt(sept2018eveningCount);
+			int sept2018mornCount = Integer.parseInt(sept2018morningCount);
+			int sept2018average = (sept2018eveCount + sept2018mornCount) / 2;
+			double sept2018Lat = Double.parseDouble(data[i][0]);
+			double sept2018Lng = Double.parseDouble(data[i][1]);
+			String sept2017eveningCount = data[i][sept2017eveningIndex];
+			String sept2017morningCount = data[i][sept2017morningIndex];
+			int sept2017eveCount = Integer.parseInt(sept2017eveningCount);
+			int sept2017mornCount = Integer.parseInt(sept2017morningCount);
+			int sept2017average = (sept2017eveCount + sept2017mornCount) / 2;
+			int difference = sept2018average - sept2017average;
+			if (!(sept2017average == 0) && (difference > 0) && !(sept2018average == 0)){
+				Location markerLocation = new Location(sept2018Lat, sept2018Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {0, 255, 0, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else if (difference == 0) {
+				Location markerLocation = new Location(sept2018Lat, sept2018Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {50, 50, 50, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}
+			else { //purposely doing nothing with this block other than establishing some important data for the marker if it were to be placed on the map.
+				//nothing will be performed here so im going to put code to start the marker, but not add the marker
+				Location markerLocation = new Location(sept2018Lat, sept2018Lng);
+				float markerRadius = difference * SCALE_FACTOR;
+				float[] markerColor = {255, 255, 255, 127};
+			}
+		}
 		// complete this method	
 	}
 
@@ -149,13 +321,16 @@ public class App extends PApplet {
 	 * @return A String array, where each String contains the text of a line of the file, with its line break removed.
 	 * @throws FileNotFoundException
 	 */
-	public String[] getLinesFromFile(String filepath) {
-		String[] lines = {"foo", "bar"};
-		return lines;
-		// delete the two lines above... they are placeholder only
-		// complete this method
-	}
 
+	public String[] getLinesFromFile(String filepath) throws FileNotFoundException {
+		File file = new File(filepath);
+		Scanner scn = new Scanner(new FileReader(filepath));
+		String lineSeparator = Pattern.quote(System.getProperty("line.separator"));
+		String getContent = scn.useDelimiter("\\A").next();
+		scn.close();
+		String [] finalList = getContent.split(lineSeparator);
+		return finalList;
+	}
 	/**
 	 * Takes an array of lines of text in comma-separated values (CSV) format and splits each line into a sub-array of data fields.
 	 * For example, an argument such as {"1,2,3", "100,200,300"} could result in a returned array { {"1", "2", "3"}, {"100", "200", "300"} }
@@ -166,18 +341,13 @@ public class App extends PApplet {
 	 * @return A two-dimensional String array, where each inner array contains the data from one of the lines, split by commas.
 	 */
 	public String[][] getDataFromLines(String[] lines) {
-		// complete this method - DELETE THE EXAMPLE CODE BELOW
-
-		// hint: ultimately, you want this function to return data structured something like the following (you can structure your array differently if you prefer)
-		// in this example, the geospatial Point data (latitude and longitude), which is one field in the original CSV file, has been broken up into two fields... you would be wise to do this too.
-		String[][] allLines = { 
-			// the first two values are the latitude and longitude... these were a single field in the original CSV file
-			{"-73.90459140730678","40.87919896648574","Bronx","1","1","Broadway","West 231st Street","Naples Terrace","N","1189","4094","2508","734","2646","2939","802","4015","2631","1125","4310","3420","1001","3475","2832","991","4262","2469","1010","3609","3128","863","4119","2217","997","4440","2687","1328","3820","2428","1288","3328","3365","1268","4315","2276","1210","4710","3825","1206","4590","3008","1220","4384","2641","1450","4646","2996","1788","4980","3033","1204","4520","2999","1246","4531","2686","1309","3642","2830","1916","5893","2776","1111","4044","2731","1271","4502","2899","1708","4464","2967","","","","486","2843","1754","630","3262","4710"},
-			{"-73.92188432870218","40.82662794123294","Bronx","2","2","East 161st Street","Grand Concourse","Sheridan Avenue","Y","1511","3184","1971","1855","3754","1183","1136","2638","1522","1939","3283","1383","1351","3111","1304","1227","3137","2762","2077","3283","1409","1007","3069","1477","1734","3333","1772","2051","3525","1752","1233","1875","1912","2113","4099","1970","2278","4215","2288","2071","3890","1832","2206","4363","2315","1949","4435","2388","2318","4589","2483","2005","4790","2512","2053","4721","2311","2109","5485","2548","1848","4920","2143","2389","5952","2832","1749","5148","2156","2006","4723","1604","1702","4347","1576","780","1892","1287","1405","2097","8410"},
-			{"-73.92785197149036","40.80034506063933","Harlem River Bridges","113","113","Triborough Bridge (Manhattan span)","midpoint","","N","17","35","34","11","44","24","30","44","16","30","200","23","37","44","23","20","174","66","12","39","55","36","205","64","10","45","11","7","119","39","26","21","49","6","33","15","12","42","16","13","31","40","14","32","10","21","42","20","19","36","14","17","40","28","10","18","8","21","43","21","7","19","5","16","38","24","6","14","4","12","15","6","","","","","","","23","52","6437"},
-			{"-73.93686603590555","40.78611224350854","Harlem River Bridges","114","114","Wards Island Bridge","midpoint","","N","57","207","71","63","186","149","45","203","113","80","190","120","33","213","324","43","151","173","37","169","674","77","205","913","32","66","70","62","189","936","78","249","439","102","460","569","191","455","435","92","514","594","164","527","312","123","458","564","189","539","312","117","424","581","160","484","300","159","490","587","169","493","312","178","519","608","187","543","351","213","490","263","","","","","","","237","405","6353"}
-		};
-		return allLines;
+		String[][] all_lines = new String[lines.length][];
+		for (int i = 0; i < lines.length; i++) {
+			if ((lines[i] != null) && !lines[i].isEmpty() && !lines[i].trim().isEmpty()	) {
+				all_lines[i] = lines[i].split(",");
+			}
+		}
+		return all_lines;
 
 	}
 
